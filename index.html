@@ -21,7 +21,7 @@
 
 <nav class="navbar bg-white border-bottom px-3 py-2 mb-4" style="box-shadow:0 1px 4px rgba(0,0,0,.06)">
   <span class="navbar-brand">📈 主策略組合</span>
-  <span class="update-badge">更新：2026-04-28 20:37 (UTC+8)</span>
+  <span class="update-badge">更新：2026-04-28 20:45 (UTC+8)</span>
 </nav>
 
 <div class="container pb-5">
@@ -60,22 +60,104 @@
         </div>
       </div>
       <div class="col-md-5">
-        <div class="card p-3 h-100">
-          <table class="table table-sm mb-0">
-            <thead class="table-light"><tr>
-              <th>股票</th><th>進場日</th><th>損益</th>
-            </tr></thead>
-            <tbody><tr><td><strong>3167 大量</strong></td><td class="text-muted small">2026/04/13</td><td><span class="text-success">20.7%</span></td></tr><tr><td><strong>3491 昇達科</strong></td><td class="text-muted small">2026/04/13</td><td><span class="text-danger">-9.3%</span></td></tr><tr><td><strong>3583 辛耘</strong></td><td class="text-muted small">2026/04/13</td><td><span class="text-success">5.0%</span></td></tr><tr><td><strong>6693 廣閎科</strong></td><td class="text-muted small">2026/04/13</td><td><span class="text-danger">-7.2%</span></td></tr><tr><td><strong>2368 金像電</strong></td><td class="text-muted small">-</td><td>-</td></tr><tr><td><strong>3037 欣興</strong></td><td class="text-muted small">-</td><td>-</td></tr><tr><td><strong>6658 聯策</strong></td><td class="text-muted small">-</td><td>-</td></tr><tr><td><strong>6735 美達科技</strong></td><td class="text-muted small">-</td><td>-</td></tr></tbody>
-          </table>
-          
-              <div style="border-top:1px solid #dee2e6;padding-top:8px;margin-top:8px">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <h6 class="mb-0" style="font-size:.85rem">下次換股</h6>
-                  <span class="badge bg-secondary" style="font-size:.65rem">2026-05 (預計)</span>
-                </div>
-                <table class="table table-sm mb-0"><tbody><tr><td><strong>6735</strong></td><td>43.3%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:112px;max-width:100%"></div></div></td></tr><tr><td><strong>6658</strong></td><td>30.0%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:78px;max-width:100%"></div></div></td></tr><tr><td><strong>3037</strong></td><td>13.3%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:34px;max-width:100%"></div></div></td></tr><tr><td><strong>2368</strong></td><td>13.3%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:34px;max-width:100%"></div></div></td></tr></tbody></table>
-              </div>
-          <p class="text-muted small mb-0 mt-2">N_CB3=3, N強勢=2｜9月空手｜出=下次出場 新=新進</p>
+        <div class="card p-3 h-100" style="overflow-x:auto">
+          <table class="dataframe table table-sm table-hover mb-0">
+  <thead>
+    <tr style="text-align: right;">
+      <th>股票</th>
+      <th>進場日</th>
+      <th>出場日</th>
+      <th>損益</th>
+      <th>持有天</th>
+      <th>進場價</th>
+      <th>MAE</th>
+      <th>GMFE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>3167 大量</td>
+      <td>2026/04/13</td>
+      <td>-</td>
+      <td>20.7%</td>
+      <td>12</td>
+      <td>614.00</td>
+      <td>-0.00</td>
+      <td>0.21</td>
+    </tr>
+    <tr>
+      <td>3491 昇達科</td>
+      <td>2026/04/13</td>
+      <td>-</td>
+      <td>-9.3%</td>
+      <td>12</td>
+      <td>1785.00</td>
+      <td>-0.13</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <td>3583 辛耘</td>
+      <td>2026/04/13</td>
+      <td>-</td>
+      <td>5.0%</td>
+      <td>12</td>
+      <td>702.00</td>
+      <td>-0.03</td>
+      <td>0.27</td>
+    </tr>
+    <tr>
+      <td>6693 廣閎科</td>
+      <td>2026/04/13</td>
+      <td>-</td>
+      <td>-7.2%</td>
+      <td>12</td>
+      <td>147.50</td>
+      <td>-0.08</td>
+      <td>0.07</td>
+    </tr>
+    <tr>
+      <td>2368 金像電</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>1390.00</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>3037 欣興</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>825.00</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>6658 聯策</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>133.50</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>6735 美達科技</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>145.00</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+          <p class="text-muted small mb-0 mt-2">N_CB3=3, N強勢=2｜9月空手</p>
         </div></div>
     </div>
   </div>
@@ -114,22 +196,54 @@
         </div>
       </div>
       <div class="col-md-5">
-        <div class="card p-3 h-100">
-          <table class="table table-sm mb-0">
-            <thead class="table-light"><tr>
-              <th>股票</th><th>進場日</th><th>損益</th>
-            </tr></thead>
-            <tbody><tr><td><strong>3260 威剛</strong></td><td class="text-muted small">2026/04/28</td><td><span class="text-success">6.0%</span></td></tr><tr><td><strong>5475 德宏</strong></td><td class="text-muted small">2026/04/07</td><td><span class="text-success">32.1%</span></td></tr><tr><td><strong>6727 亞泰金屬</strong></td><td class="text-muted small">2026/04/07</td><td><span class="text-success">2.7%</span></td></tr></tbody>
-          </table>
-          
-              <div style="border-top:1px solid #dee2e6;padding-top:8px;margin-top:8px">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <h6 class="mb-0" style="font-size:.85rem">下次換股</h6>
-                  <span class="badge bg-secondary" style="font-size:.65rem">2026-04-28</span>
-                </div>
-                <table class="table table-sm mb-0"><tbody><tr><td><strong>3260</strong></td><td>100.0%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:260px;max-width:100%"></div></div></td></tr><tr><td><strong>5475</strong></td><td>100.0%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:260px;max-width:100%"></div></div></td></tr><tr><td><strong>6727</strong></td><td>100.0%<div class="progress mt-1" style="height:4px"><div class="progress-bar bg-success" style="width:260px;max-width:100%"></div></div></td></tr></tbody></table>
-              </div>
-          <p class="text-muted small mb-0 mt-2">gap>9%, OBV 100日新高｜依訊號換倉｜1月空手</p>
+        <div class="card p-3 h-100" style="overflow-x:auto">
+          <table class="dataframe table table-sm table-hover mb-0">
+  <thead>
+    <tr style="text-align: right;">
+      <th>股票</th>
+      <th>進場日</th>
+      <th>出場日</th>
+      <th>損益</th>
+      <th>持有天</th>
+      <th>進場價</th>
+      <th>MAE</th>
+      <th>GMFE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>3260 威剛</td>
+      <td>2026/04/28</td>
+      <td>-</td>
+      <td>6.0%</td>
+      <td>1</td>
+      <td>456.00</td>
+      <td>0.00</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <td>5475 德宏</td>
+      <td>2026/04/07</td>
+      <td>-</td>
+      <td>32.1%</td>
+      <td>16</td>
+      <td>256.50</td>
+      <td>0.00</td>
+      <td>0.56</td>
+    </tr>
+    <tr>
+      <td>6727 亞泰金屬</td>
+      <td>2026/04/07</td>
+      <td>-</td>
+      <td>2.7%</td>
+      <td>16</td>
+      <td>379.50</td>
+      <td>-0.07</td>
+      <td>0.22</td>
+    </tr>
+  </tbody>
+</table>
+          <p class="text-muted small mb-0 mt-2">gap>9%, OBV 100日新高｜1月空手</p>
         </div></div>
     </div>
   </div>
