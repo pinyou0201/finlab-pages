@@ -17,22 +17,42 @@
   .section-title { padding:14px 16px 4px; font-weight:700; font-size:1.05rem;
                    border-left:4px solid #1a7abf; margin:16px 0 0 12px; }
   .section-title.s2 { border-left-color:#8e44ad; }
-  iframe { width:100%; height:1200px; border:0; display:block; }
+  iframe { width:100%; height:600px; border:0; display:block; }
   .footer { padding:10px 16px; color:#6c757d; font-size:.85rem; text-align:right; }
 </style>
 </head>
 <body>
 <div class="navbar">
   <span class="brand">📈 主策略組合</span>
-  <span class="update">更新：2026-05-14 10:15 (UTC+8)</span>
+  <span class="update">更新：2026-05-14 10:30 (UTC+8)</span>
 </div>
 
 <div class="section-title">策略一：混合 v14（CB3×40% + 強勢×60%　月換倉）</div>
-<iframe src="s1.html" loading="lazy"></iframe>
+<iframe id="if1" src="s1.html" loading="lazy"></iframe>
 
 <div class="section-title s2">策略二：處置股 V13（累積 strength 前 N　依訊號換倉）</div>
-<iframe src="s2.html" loading="lazy"></iframe>
+<iframe id="if2" src="s2.html" loading="lazy"></iframe>
 
 <div class="footer">共同排除：光電 / 電器電纜 / 貿易百貨（158 支）</div>
+
+<script>
+// 同 origin (Pages 同網域)：讀 iframe contentDocument.body.scrollHeight 自動撐高
+function autoResize(iframe) {
+  const doc = iframe.contentDocument;
+  if (!doc || !doc.body) return;
+  const update = () => {
+    const h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+    if (h > 0) iframe.style.height = (h + 24) + 'px';
+  };
+  update();
+  try { new ResizeObserver(update).observe(doc.body); } catch (e) {}
+  // finlab web component 可能 async 渲染，補幾次保險
+  [300, 800, 2000].forEach(t => setTimeout(update, t));
+}
+document.querySelectorAll('iframe').forEach(f => {
+  if (f.contentDocument && f.contentDocument.readyState === 'complete') autoResize(f);
+  f.addEventListener('load', () => autoResize(f));
+});
+</script>
 </body>
 </html>
