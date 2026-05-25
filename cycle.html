@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>波段 34 天轉折分析</title>
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1117;color:#e1e4e8;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.5}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+
+.navbar{background:#161b22;padding:10px 16px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.brand{font-weight:700;font-size:1.1rem;color:#e1e4e8}
+.nav-links{display:flex;gap:12px;align-items:center;font-size:.85rem}
+
+.container{max-width:1400px;margin:0 auto;padding:12px}
+
+.controls{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+.ctrl-group{display:flex;flex-direction:column;gap:4px;min-width:140px}
+.ctrl-group label{font-size:.75rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.ctrl-group select,.ctrl-group input[type=range]{background:#0d1117;border:1px solid #30363d;color:#e1e4e8;border-radius:4px;padding:4px 8px;font-size:.85rem}
+.ctrl-group input[type=range]{padding:0;height:28px;cursor:pointer;accent-color:#58a6ff}
+.ctrl-val{font-size:.8rem;color:#58a6ff;font-weight:600;min-width:30px;text-align:right}
+.ctrl-row{display:flex;align-items:center;gap:8px}
+.cycle-toggles{display:flex;gap:6px;flex-wrap:wrap}
+.cycle-btn{background:#0d1117;border:1px solid #30363d;color:#8b949e;border-radius:4px;padding:4px 10px;font-size:.8rem;cursor:pointer;transition:all .15s}
+.cycle-btn.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff15}
+.cycle-btn:hover{border-color:#58a6ff}
+.cycle-btn[data-cycle="21"].active{border-color:#f0883e;color:#f0883e;background:#f0883e15}
+.cycle-btn[data-cycle="55"].active{border-color:#a371f7;color:#a371f7;background:#a371f715}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 14px;text-align:center}
+.stat-card .label{font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-card .value{font-size:1.4rem;font-weight:700;color:#58a6ff}
+.stat-card .sub{font-size:.75rem;color:#8b949e;margin-top:2px}
+.stat-card.highlight .value{color:#3fb950}
+.stat-card.warn .value{color:#f0883e}
+.stat-card.predict .value{color:#a371f7;font-size:1.1rem}
+
+.chart-wrap{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden;margin-bottom:12px}
+.chart-title{padding:8px 14px;font-size:.8rem;color:#8b949e;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center}
+.chart-container{width:100%;position:relative}
+#mainChart{height:420px}
+#pcrChart{height:140px}
+#oiChart{height:140px}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.75rem}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+.table-wrap{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden;margin-bottom:12px}
+.table-wrap h3{padding:10px 14px;font-size:.9rem;border-bottom:1px solid #30363d;color:#e1e4e8}
+.table-scroll{overflow-x:auto;max-height:400px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead{position:sticky;top:0;background:#161b22;z-index:1}
+th{padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d;font-size:.75rem;text-transform:uppercase}
+td{padding:6px 12px;border-bottom:1px solid #21262d;white-space:nowrap}
+tr:hover{background:#1c2128}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.72rem;font-weight:600}
+.tag-high{background:#da363415;color:#f85149}
+.tag-low{background:#23883615;color:#3fb950}
+.tag-hit{background:#58a6ff15;color:#58a6ff}
+.tag-miss{background:#484f5815;color:#8b949e}
+
+.loading{display:flex;align-items:center;justify-content:center;height:300px;color:#8b949e;font-size:1rem}
+.loading .spinner{width:24px;height:24px;border:3px solid #30363d;border-top-color:#58a6ff;border-radius:50%;animation:spin .8s linear infinite;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .controls{gap:10px}
+  .ctrl-group{min-width:100px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  #mainChart{height:300px}
+  #pcrChart,#oiChart{height:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <span class="brand">📊 波段轉折週期分析</span>
+  <div class="nav-links">
+    <a href="index.html">← 回主策略組合</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="controls" id="controls">
+    <div class="ctrl-group">
+      <label>週期選擇</label>
+      <div class="cycle-toggles">
+        <button class="cycle-btn" data-cycle="21">21天</button>
+        <button class="cycle-btn active" data-cycle="34">34天</button>
+        <button class="cycle-btn" data-cycle="55">55天</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>容忍天數（±）</label>
+      <div class="ctrl-row">
+        <input type="range" id="tolerance" min="1" max="8" value="4" step="1">
+        <span class="ctrl-val" id="tolVal">4</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>峰谷靈敏度</label>
+      <div class="ctrl-row">
+        <input type="range" id="lookback" min="5" max="25" value="12" step="1">
+        <span class="ctrl-val" id="lbVal">12</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>最小波幅 %</label>
+      <div class="ctrl-row">
+        <input type="range" id="minSwing" min="1" max="15" value="5" step="0.5">
+        <span class="ctrl-val" id="msVal">5%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" id="statsPanel">
+    <div class="stat-card highlight"><div class="label">週期命中率</div><div class="value" id="hitRate">—</div><div class="sub" id="hitDetail"></div></div>
+    <div class="stat-card"><div class="label">平均轉折週期</div><div class="value" id="avgCycle">—</div><div class="sub">交易日</div></div>
+    <div class="stat-card predict"><div class="label">下次轉折窗口</div><div class="value" id="nextDate">—</div><div class="sub" id="nextRange"></div></div>
+    <div class="stat-card warn"><div class="label">預測方向</div><div class="value" id="nextDir">—</div><div class="sub" id="lastTurn"></div></div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">
+      <span>加權指數 K 線圖 — 轉折點 & 週期格線</span>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div>高點轉折</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div>低點轉折</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#58a6ff"></div>34天週期</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f0883e"></div>21天週期</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#a371f7"></div>55天週期</div>
+      </div>
+    </div>
+    <div class="chart-container" id="mainChart">
+      <div class="loading"><div class="spinner"></div>載入資料中...</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Put/Call Ratio（未平倉）</span></div>
+    <div class="chart-container" id="pcrChart"></div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>大戶未平倉口數</span></div>
+    <div class="chart-container" id="oiChart"></div>
+  </div>
+
+  <div class="table-wrap">
+    <h3>轉折點歷史紀錄</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>日期</th><th>類型</th><th>價格</th><th>距前次</th><th>週期偏差</th><th>命中</th></tr></thead>
+        <tbody id="tpTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+'use strict';
+
+let rawData = [];
+let ohlcData = [];
+let pcrData = [];
+let oiData = [];
+let dateIndex = new Map();
+
+let mainChart, candleSeries, pcrChart, pcrSeries, oiChart, oiSeries;
+let cycleMarkersMap = {};
+
+const CYCLE_COLORS = { 21: '#f0883e', 34: '#58a6ff', 55: '#a371f7' };
+let activeCycles = new Set([34]);
+
+async function loadData() {
+  const resp = await fetch('mxfn-pcr-2003-2026.csv');
+  const text = await resp.text();
+  const lines = text.trim().split('\n');
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',');
+    const date = cols[0];
+    const open = parseFloat(cols[1]);
+    const high = parseFloat(cols[2]);
+    const low = parseFloat(cols[3]);
+    const close = parseFloat(cols[4]);
+    const pcr = parseFloat(cols[5]);
+    const oi = parseFloat(cols[6]);
+
+    rawData.push({ date, open, high, low, close, pcr, oi });
+
+    if (!isNaN(close) && close > 0) {
+      ohlcData.push({ time: date, open, high, low, close, _idx: ohlcData.length });
+      dateIndex.set(date, ohlcData.length - 1);
+    }
+
+    if (!isNaN(pcr)) {
+      pcrData.push({ time: date, value: pcr });
+    }
+    if (!isNaN(oi)) {
+      oiData.push({ time: date, value: oi });
+    }
+  }
+}
+
+function detectTurningPoints(lookback, minSwingPct) {
+  const n = ohlcData.length;
+  if (n < lookback * 2 + 1) return [];
+
+  let candidates = [];
+
+  for (let i = lookback; i < n - lookback; i++) {
+    let isHigh = true, isLow = true;
+    const hi = ohlcData[i].high;
+    const lo = ohlcData[i].low;
+
+    for (let j = i - lookback; j <= i + lookback; j++) {
+      if (j === i) continue;
+      if (ohlcData[j].high > hi) isHigh = false;
+      if (ohlcData[j].low < lo) isLow = false;
+      if (!isHigh && !isLow) break;
+    }
+
+    if (isHigh) candidates.push({ idx: i, type: 'high', price: hi, date: ohlcData[i].time });
+    if (isLow) candidates.push({ idx: i, type: 'low', price: lo, date: ohlcData[i].time });
+  }
+
+  candidates.sort((a, b) => a.idx - b.idx);
+
+  let filtered = [];
+  for (const c of candidates) {
+    if (filtered.length === 0) {
+      filtered.push(c);
+      continue;
+    }
+    const last = filtered[filtered.length - 1];
+    if (last.type === c.type) {
+      if (c.type === 'high' && c.price > last.price) {
+        filtered[filtered.length - 1] = c;
+      } else if (c.type === 'low' && c.price < last.price) {
+        filtered[filtered.length - 1] = c;
+      }
+    } else {
+      filtered.push(c);
+    }
+  }
+
+  let result = [];
+  for (let i = 0; i < filtered.length; i++) {
+    if (i === 0) { result.push(filtered[i]); continue; }
+    const prev = result[result.length - 1];
+    const curr = filtered[i];
+    const swingPct = Math.abs(curr.price - prev.price) / prev.price * 100;
+    if (swingPct >= minSwingPct) {
+      result.push(curr);
+    } else {
+      if (curr.type === prev.type) {
+        if ((curr.type === 'high' && curr.price > prev.price) ||
+            (curr.type === 'low' && curr.price < prev.price)) {
+          result[result.length - 1] = curr;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+function computeCycleGrid(turningPoints, cycleLen) {
+  if (turningPoints.length < 2) return [];
+
+  const tolerance = parseInt(document.getElementById('tolerance').value) || 3;
+  let bestAnchorIdx = -1;
+  let bestScore = -1;
+
+  for (let a = 0; a < turningPoints.length; a++) {
+    const anchor = turningPoints[a].idx;
+    let score = 0;
+    for (const tp of turningPoints) {
+      const diff = Math.abs(tp.idx - anchor);
+      const rem = diff % cycleLen;
+      const dist = Math.min(rem, cycleLen - rem);
+      if (dist <= tolerance) score++;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestAnchorIdx = a;
+    }
+  }
+
+  const anchorDataIdx = turningPoints[bestAnchorIdx].idx;
+  let gridIndices = [];
+
+  for (let idx = anchorDataIdx; idx >= 0; idx -= cycleLen) {
+    gridIndices.push(idx);
+  }
+  for (let idx = anchorDataIdx + cycleLen; idx < ohlcData.length + cycleLen * 3; idx += cycleLen) {
+    gridIndices.push(idx);
+  }
+
+  gridIndices.sort((a, b) => a - b);
+  return gridIndices;
+}
+
+function computeStats(turningPoints, cycleLen, tolerance) {
+  if (turningPoints.length < 2) return { hitRate: 0, hits: 0, total: 0, avgCycle: 0, nextDate: '', nextRange: '', nextDir: '' };
+
+  const grid = computeCycleGrid(turningPoints, cycleLen);
+  let hits = 0;
+
+  const tpWithDev = turningPoints.map(tp => {
+    let minDist = Infinity;
+    for (const gi of grid) {
+      const dist = Math.abs(tp.idx - gi);
+      if (dist < minDist) minDist = dist;
+    }
+    const hit = minDist <= tolerance;
+    if (hit) hits++;
+    return { ...tp, deviation: minDist, hit };
+  });
+
+  let totalDays = 0;
+  for (let i = 1; i < turningPoints.length; i++) {
+    totalDays += turningPoints[i].idx - turningPoints[i - 1].idx;
+  }
+  const avgCycle = Math.round(totalDays / (turningPoints.length - 1));
+
+  const lastTP = turningPoints[turningPoints.length - 1];
+  const lastIdx = lastTP.idx;
+
+  let nextGridIdx = -1;
+  for (const gi of grid) {
+    if (gi > lastIdx) { nextGridIdx = gi; break; }
+  }
+
+  let nextDate = '';
+  let nextRange = '';
+  if (nextGridIdx >= 0) {
+    const daysAhead = nextGridIdx - (ohlcData.length - 1);
+    if (daysAhead <= 0 && nextGridIdx < ohlcData.length) {
+      nextDate = ohlcData[nextGridIdx].time;
+    } else {
+      const lastDate = new Date(ohlcData[ohlcData.length - 1].time);
+      const tradingDaysAhead = nextGridIdx - (ohlcData.length - 1);
+      const calendarDays = Math.round(tradingDaysAhead * 7 / 5);
+      const est = new Date(lastDate);
+      est.setDate(est.getDate() + calendarDays);
+      nextDate = est.toISOString().slice(0, 10);
+    }
+
+    const tolCalDays = Math.round(tolerance * 7 / 5);
+    const nd = new Date(nextDate);
+    const from = new Date(nd); from.setDate(from.getDate() - tolCalDays);
+    const to = new Date(nd); to.setDate(to.getDate() + tolCalDays);
+    nextRange = from.toISOString().slice(5, 10).replace('-', '/') + ' ~ ' + to.toISOString().slice(5, 10).replace('-', '/');
+  }
+
+  const nextDir = lastTP.type === 'high' ? '低點（買）' : '高點（賣）';
+  const lastTurn = lastTP.type === 'high' ? '前次高點 ' + lastTP.date : '前次低點 ' + lastTP.date;
+
+  return { hitRate: turningPoints.length > 0 ? (hits / turningPoints.length * 100).toFixed(1) : 0, hits, total: turningPoints.length, avgCycle, nextDate, nextRange, nextDir, lastTurn, tpWithDev };
+}
+
+function initCharts() {
+  const mainEl = document.getElementById('mainChart');
+  mainEl.innerHTML = '';
+
+  const chartOptions = {
+    layout: { background: { color: '#161b22' }, textColor: '#8b949e', fontSize: 11 },
+    grid: { vertLines: { color: '#21262d' }, horzLines: { color: '#21262d' } },
+    crosshair: { mode: 0 },
+    timeScale: { borderColor: '#30363d', timeVisible: false, rightOffset: 10 },
+    rightPriceScale: { borderColor: '#30363d' },
+    handleScroll: { vertTouchDrag: false },
+  };
+
+  mainChart = LightweightCharts.createChart(mainEl, { ...chartOptions, height: 420 });
+  candleSeries = mainChart.addCandlestickSeries({
+    upColor: '#3fb950', downColor: '#f85149',
+    borderUpColor: '#3fb950', borderDownColor: '#f85149',
+    wickUpColor: '#3fb95088', wickDownColor: '#f8514988',
+  });
+  candleSeries.setData(ohlcData);
+
+  const pcrEl = document.getElementById('pcrChart');
+  pcrChart = LightweightCharts.createChart(pcrEl, { ...chartOptions, height: 140 });
+  pcrSeries = pcrChart.addLineSeries({ color: '#f0883e', lineWidth: 1.5, priceFormat: { type: 'price', precision: 1, minMove: 0.1 } });
+  pcrSeries.setData(pcrData);
+
+  const oiEl = document.getElementById('oiChart');
+  oiChart = LightweightCharts.createChart(oiEl, { ...chartOptions, height: 140 });
+  oiSeries = oiChart.addHistogramSeries({
+    color: '#58a6ff',
+    priceFormat: { type: 'price', precision: 0, minMove: 1 },
+  });
+  const oiColored = oiData.map(d => ({ ...d, color: d.value >= 0 ? '#3fb95088' : '#f8514988' }));
+  oiSeries.setData(oiColored);
+
+  let syncing = false;
+  function syncRange(source, targets) {
+    return (range) => {
+      if (syncing || !range) return;
+      syncing = true;
+      for (const t of targets) t.timeScale().setVisibleLogicalRange(range);
+      syncing = false;
+    };
+  }
+  mainChart.timeScale().subscribeVisibleLogicalRangeChange(syncRange(mainChart, [pcrChart, oiChart]));
+  pcrChart.timeScale().subscribeVisibleLogicalRangeChange(syncRange(pcrChart, [mainChart, oiChart]));
+  oiChart.timeScale().subscribeVisibleLogicalRangeChange(syncRange(oiChart, [mainChart, pcrChart]));
+
+  const threeYearsAgo = new Date();
+  threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+  const fromDate = threeYearsAgo.toISOString().slice(0, 10);
+  mainChart.timeScale().setVisibleRange({ from: fromDate, to: ohlcData[ohlcData.length - 1].time });
+}
+
+function createCycleLineSeries(cycleLen, grid, color) {
+  const lines = [];
+  for (const gi of grid) {
+    if (gi < 0 || gi >= ohlcData.length) continue;
+    const date = ohlcData[gi].time;
+    const marker = {
+      time: date,
+      position: 'aboveBar',
+      color: color,
+      shape: 'square',
+      text: '',
+    };
+    lines.push(marker);
+  }
+  return lines;
+}
+
+let cycleSeriesMap = {};
+
+function updateCycleOverlay(turningPoints) {
+  for (const key of Object.keys(cycleSeriesMap)) {
+    if (cycleSeriesMap[key]) {
+      mainChart.removeSeries(cycleSeriesMap[key]);
+    }
+  }
+  cycleSeriesMap = {};
+
+  for (const cycleLen of activeCycles) {
+    const grid = computeCycleGrid(turningPoints, cycleLen);
+    const color = CYCLE_COLORS[cycleLen];
+
+    const seriesData = [];
+    for (const gi of grid) {
+      if (gi < 0 || gi >= ohlcData.length) continue;
+      seriesData.push({
+        time: ohlcData[gi].time,
+        value: ohlcData[gi].high * 1.005,
+      });
+    }
+
+    if (seriesData.length > 0) {
+      const lineSeries = mainChart.addLineSeries({
+        color: color,
+        lineWidth: 0,
+        pointMarkersVisible: true,
+        pointMarkersRadius: 4,
+        lastValueVisible: false,
+        priceLineVisible: false,
+        crosshairMarkerVisible: false,
+      });
+      lineSeries.setData(seriesData);
+      cycleSeriesMap[cycleLen] = lineSeries;
+    }
+  }
+}
+
+function update() {
+  const lookback = parseInt(document.getElementById('lookback').value);
+  const minSwing = parseFloat(document.getElementById('minSwing').value);
+  const tolerance = parseInt(document.getElementById('tolerance').value);
+
+  document.getElementById('tolVal').textContent = tolerance;
+  document.getElementById('lbVal').textContent = lookback;
+  document.getElementById('msVal').textContent = minSwing + '%';
+
+  const turningPoints = detectTurningPoints(lookback, minSwing);
+
+  const primaryCycle = activeCycles.has(34) ? 34 : activeCycles.has(21) ? 21 : activeCycles.has(55) ? 55 : 34;
+  const stats = computeStats(turningPoints, primaryCycle, tolerance);
+
+  document.getElementById('hitRate').textContent = stats.hitRate + '%';
+  document.getElementById('hitDetail').textContent = stats.hits + ' / ' + stats.total + ' 個轉折點命中';
+  document.getElementById('avgCycle').textContent = stats.avgCycle;
+  document.getElementById('nextDate').textContent = stats.nextDate;
+  document.getElementById('nextRange').textContent = '±' + tolerance + '天：' + stats.nextRange;
+  document.getElementById('nextDir').textContent = stats.nextDir;
+  document.getElementById('lastTurn').textContent = stats.lastTurn;
+
+  const markers = turningPoints.map(tp => ({
+    time: tp.date,
+    position: tp.type === 'high' ? 'aboveBar' : 'belowBar',
+    color: tp.type === 'high' ? '#f85149' : '#3fb950',
+    shape: tp.type === 'high' ? 'arrowDown' : 'arrowUp',
+    text: tp.type === 'high' ? '▼' : '▲',
+  }));
+  candleSeries.setMarkers(markers);
+
+  updateCycleOverlay(turningPoints);
+
+  const tbody = document.getElementById('tpTable');
+  const tpWithDev = stats.tpWithDev || [];
+  let html = '';
+  for (let i = tpWithDev.length - 1; i >= 0; i--) {
+    const tp = tpWithDev[i];
+    const daysSincePrev = i > 0 ? tp.idx - tpWithDev[i - 1].idx : '—';
+    const typeTag = tp.type === 'high'
+      ? '<span class="tag tag-high">高點</span>'
+      : '<span class="tag tag-low">低點</span>';
+    const hitTag = tp.hit
+      ? '<span class="tag tag-hit">命中</span>'
+      : '<span class="tag tag-miss">未中</span>';
+    html += `<tr>
+      <td>${tp.date}</td>
+      <td>${typeTag}</td>
+      <td>${Math.round(tp.price).toLocaleString()}</td>
+      <td>${daysSincePrev} 天</td>
+      <td>${tp.deviation} 天</td>
+      <td>${hitTag}</td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+}
+
+function setupControls() {
+  document.getElementById('tolerance').addEventListener('input', update);
+  document.getElementById('lookback').addEventListener('input', update);
+  document.getElementById('minSwing').addEventListener('input', update);
+
+  document.querySelectorAll('.cycle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cycle = parseInt(btn.dataset.cycle);
+      if (btn.classList.contains('active')) {
+        if (activeCycles.size > 1) {
+          activeCycles.delete(cycle);
+          btn.classList.remove('active');
+        }
+      } else {
+        activeCycles.add(cycle);
+        btn.classList.add('active');
+      }
+      update();
+    });
+  });
+}
+
+function handleResize() {
+  const els = [['mainChart', mainChart], ['pcrChart', pcrChart], ['oiChart', oiChart]];
+  for (const [id, chart] of els) {
+    if (chart) {
+      const w = document.getElementById(id).clientWidth;
+      if (w > 0) chart.applyOptions({ width: w });
+    }
+  }
+}
+
+async function init() {
+  try {
+    await loadData();
+    initCharts();
+    setupControls();
+    update();
+    window.addEventListener('resize', handleResize);
+  } catch (err) {
+    document.getElementById('mainChart').innerHTML = '<div class="loading" style="color:#f85149">載入失敗：' + err.message + '</div>';
+  }
+}
+
+init();
+})();
+</script>
+</body>
+</html>
