@@ -17,14 +17,25 @@
   .section-title { padding:14px 16px 4px; font-weight:700; font-size:1.05rem;
                    border-left:4px solid #1a7abf; margin:16px 0 0 12px; }
   .section-title.s2 { border-left-color:#8e44ad; }
+  .section-title.z2 { border-left-color:#e67e22; }
   iframe { width:100%; height:1200px; border:0; display:block; }
+  .zheng2-card { background:#fff; margin:6px 16px 0 12px; padding:16px 18px;
+                 border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .z2-action { display:inline-block; font-weight:800; font-size:1.05rem;
+               padding:6px 16px; border-radius:999px; margin-bottom:12px; }
+  .z2-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:8px 18px; }
+  .z2-grid > div { display:flex; gap:10px; align-items:baseline; }
+  .z2-k { color:#6b7280; font-size:.85rem; min-width:64px; }
+  .z2-v { font-weight:600; }
+  .z2-note { margin-top:12px; color:#6c757d; font-size:.8rem;
+             border-top:1px dashed #e5e7eb; padding-top:8px; }
   .footer { padding:10px 16px; color:#6c757d; font-size:.85rem; text-align:right; }
 </style>
 </head>
 <body>
 <div class="navbar">
   <span class="brand">📈 主策略組合</span>
-  <span class="update">更新：2026-05-30 22:13 (UTC+8)</span>
+  <span class="update">更新：2026-05-30 22:29 (UTC+8)</span>
 </div>
 
 <div class="section-title">策略一：混合 v14（CB3×40% + 強勢×60%　月換倉）</div>
@@ -32,6 +43,19 @@
 
 <div class="section-title s2">策略二：處置股 V13（累積 strength 前 N　依訊號換倉）</div>
 <iframe src="s2.html" loading="lazy"></iframe>
+
+<div class="section-title z2">策略三：正二 v3.1（00631L　PCR + MA60　日換倉）</div>
+<div class="zheng2-card">
+  <div class="z2-action" style="color:#1a7abf;background:#e0f2fe">💎 持有中</div>
+  <div class="z2-grid">
+    <div><span class="z2-k">標的</span><span class="z2-v">00631L 元大台灣50正2</span></div>
+    <div><span class="z2-k">持倉</span><span class="z2-v">📦 持倉中</span></div>
+    <div><span class="z2-k">PCR 30MA</span><span class="z2-v">151.6 <small>(進&gt;100 / 退&lt;100)</small></span></div>
+    <div><span class="z2-k">TAIEX</span><span class="z2-v">MA20 站上　MA60 站上</span></div>
+    <div><span class="z2-k">資料日期</span><span class="z2-v">2026-05-29</span></div>
+  </div>
+  <div class="z2-note">進場 PCR&gt;100 + TAIEX 站上 MA20 &amp; MA60　/　出場 17% trail OR PCR&lt;100。訊號收盤產生、隔日開盤成交。</div>
+</div>
 
 <div class="footer">共同排除：光電 / 電器電纜 / 貿易百貨（158 支）</div>
 </body>
