@@ -16,9 +16,8 @@
             padding:3px 10px; border-radius:20px; }
   .section-title { padding:14px 16px 4px; font-weight:700; font-size:1.05rem;
                    border-left:4px solid #1a7abf; margin:16px 0 0 12px; }
-  .section-title.s2 { border-left-color:#8e44ad; }
   .section-title.z2 { border-left-color:#e67e22; }
-  iframe { width:100%; height:1200px; border:0; display:block; }
+  .section-title.us { border-left-color:#2563eb; }
   .zheng2-card { background:#fff; margin:6px 16px 0 12px; padding:16px 18px;
                  border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
   .z2-action { display:inline-block; font-weight:800; font-size:1.05rem;
@@ -29,19 +28,23 @@
   .z2-v { font-weight:600; }
   .z2-note { margin-top:12px; color:#6c757d; font-size:.8rem;
              border-top:1px dashed #e5e7eb; padding-top:8px; }
+  .us-picks { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+  .us-pick { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:baseline;
+             padding:8px 12px; background:#f8fafc; border-radius:8px; }
+  .us-sym { font-weight:800; font-size:1rem; min-width:64px; }
+  .us-px { font-weight:600; color:#111827; }
+  .us-sc { color:#6b7280; font-size:.85rem; }
+  .us-mo { color:#6b7280; font-size:.85rem; margin-left:auto; }
   .footer { padding:10px 16px; color:#6c757d; font-size:.85rem; text-align:right; }
 </style>
 </head>
 <body>
 <div class="navbar">
   <span class="brand">📈 主策略組合</span>
-  <span class="update">更新：2026-07-22 19:52 (UTC+8)</span>
+  <span class="update">更新：2026-07-23 14:07 (UTC+8)</span>
 </div>
 
-<div class="section-title s2">策略一：處置股 V13（累積 strength 前 N　依訊號換倉）</div>
-<iframe src="s2.html" loading="lazy"></iframe>
-
-<div class="section-title z2">策略二：正二 v3.1（00631L　PCR + MA60　日換倉）</div>
+<div class="section-title z2">策略一：正二 v3.1（00631L　PCR + MA60　日換倉）</div>
 <div class="zheng2-card">
   <div class="z2-action" style="color:#6b7280;background:#f3f4f6">💤 空手觀望</div>
   <div class="z2-grid">
@@ -52,6 +55,19 @@
     <div><span class="z2-k">資料日期</span><span class="z2-v">2026-07-22</span></div>
   </div>
   <div class="z2-note">進場 PCR&gt;100 + TAIEX 站上 MA20 &amp; MA60　/　出場 17% trail OR PCR&lt;100。訊號收盤產生、隔日開盤成交。</div>
+</div>
+
+<div class="section-title us">策略二：美股雙動量 v8（S&P500　雙動量　月換倉）</div>
+<div class="zheng2-card">
+  <div class="z2-action" style="color:#16a34a;background:#dcfce7">📋 當月名單</div>
+  <div class="z2-grid">
+    <div><span class="z2-k">標的</span><span class="z2-v">2 檔　各 50%</span></div>
+    <div><span class="z2-k">訊號日</span><span class="z2-v">2026-06-30</span></div>
+    <div><span class="z2-k">進場日</span><span class="z2-v">2026-07-01(週三)</span></div>
+    <div><span class="z2-k">資料日期</span><span class="z2-v">2026-07-22</span></div>
+  </div>
+  <div class="us-picks"><div class="us-pick"><span class="us-sym">MRVL</span><span class="us-px">$297.82</span><span class="us-sc">分數 4.9815</span><span class="us-mo">慢+76.87% 快+67.53%</span></div><div class="us-pick"><span class="us-sym">SNDK</span><span class="us-px">$2273.73</span><span class="us-sc">分數 4.8253</span><span class="us-mo">慢+86.37% 快+48.64%</span></div></div>
+  <div class="z2-note">S&amp;P500 雙動量 top-2，各 1/N，次交易日開盤進場、每月底換股。　/　下月暫定 preview（未定案勿下單）：DELL, SNDK</div>
 </div>
 </body>
 </html>
