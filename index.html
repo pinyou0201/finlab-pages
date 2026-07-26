@@ -35,13 +35,16 @@
   .us-px { font-weight:600; color:#111827; }
   .us-sc { color:#6b7280; font-size:.85rem; }
   .us-mo { color:#6b7280; font-size:.85rem; margin-left:auto; }
+  .us-gate { margin-top:12px; padding:8px 12px; border-radius:8px; font-size:.9rem;
+             background:#fee2e2; color:#991b1b; }
+  .us-gate.ok { background:#f0fdf4; color:#166534; }
   .footer { padding:10px 16px; color:#6c757d; font-size:.85rem; text-align:right; }
 </style>
 </head>
 <body>
 <div class="navbar">
   <span class="brand">📈 主策略組合</span>
-  <span class="update">更新：2026-07-24 19:54 (UTC+8)</span>
+  <span class="update">更新：2026-07-26 12:01 (UTC+8)</span>
 </div>
 
 <div class="section-title z2">策略一：正二 v3.1（00631L　PCR + MA60　日換倉）</div>
@@ -64,10 +67,12 @@
     <div><span class="z2-k">標的</span><span class="z2-v">2 檔　各 50%</span></div>
     <div><span class="z2-k">訊號日</span><span class="z2-v">2026-06-30</span></div>
     <div><span class="z2-k">進場日</span><span class="z2-v">2026-07-01(週三)</span></div>
-    <div><span class="z2-k">資料日期</span><span class="z2-v">2026-07-23</span></div>
+    <div><span class="z2-k">資料日期</span><span class="z2-v">2026-07-24</span></div>
   </div>
+  <div class="us-gate ok">✅ 大盤風控正常　SPY 738.18 &gt; MA200 695.06</div>
   <div class="us-picks"><div class="us-pick"><span class="us-sym">MRVL</span><span class="us-px">$297.82</span><span class="us-sc">分數 4.9815</span><span class="us-mo">慢+76.87% 快+67.53%</span></div><div class="us-pick"><span class="us-sym">SNDK</span><span class="us-px">$2273.73</span><span class="us-sc">分數 4.8253</span><span class="us-mo">慢+86.37% 快+48.64%</span></div></div>
-  <div class="z2-note">S&amp;P500 雙動量 top-2，各 1/N，次交易日開盤進場、每月底換股。　/　下月暫定 preview（未定案勿下單）：DELL, AMD</div>
+  <div class="z2-note">S&amp;P500 雙動量 top-2，各 1/N，次交易日開盤進場、每月底換股。
+  大盤風控：SPY 每日跌破 MA200 即出清且當月不再進場。　/　下月暫定 preview（未定案勿下單）：HUBB</div>
 </div>
 </body>
 </html>
